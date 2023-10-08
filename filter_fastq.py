@@ -31,6 +31,7 @@ def filter_gc_content(seqs: Dict[str, Tuple[str, str]],
         A filtered dictionary where each value is a tuple containing two strings,
         representing DNA sequences and their quality.
     """
+                        
     filtered_seqs = {}
 
     if isinstance(gc_bounds, (float, int)):
@@ -81,6 +82,7 @@ def filter_length(seqs: Dict[str, Tuple[str, str]],
         representing DNA sequences and their quality.
 
     """
+                    
     filtered_seqs = {}
 
     if isinstance(length_bounds, int):
@@ -121,6 +123,7 @@ def filter_quality(seqs: Dict[str, Tuple[str, str]],
         representing DNA sequences and their quality.
 
     """
+                     
     filtered_seqs = {}
 
     if not isinstance(quality_threshold, (int, float)):
@@ -139,4 +142,56 @@ def filter_quality(seqs: Dict[str, Tuple[str, str]],
         if average_quality >= quality_threshold:
             filtered_seqs[key] = value
 
+    return filtered_seqs
+
+def filter_fastq(seqs: Dict[str, Tuple[str, str]],
+                 gc_bounds: Union[float, Tuple[Union[float, int], Union[float, int]]] = (0, 100),
+                 length_bounds: Union[int, Tuple[int, int]] = (0, 2**32),
+                 quality_threshold: Union[float, int] = 0) -> Dict[str, Tuple[str, str]]:
+    """
+    Filters sequences based on GC-content, length, and quality threshold.
+
+    Parameters:
+    -----------
+    ### seqs (Dict[str, Tuple[str, str]]):
+        A dictionary where each value is a tuple containing two strings,
+        representing DNA sequences and their quality.
+    ### gc_bounds (Union[float, Tuple[Union[float, int], Union[float, int]]]):
+        GC-content filtering bounds.
+        - Default is 100 (no filtering).
+        - If a single float is provided, it's considered as the upper bound.
+        - If an integer is provided, it's considered as the upper bound.
+        - If a tuple of two numbers is provided, they are treated as the lower and upper bounds.
+    ### length_bounds (Union[int, Tuple[int, int]]):
+        Length filtering bounds.
+        - Default is (0, 2^32) (no filtering).
+        - If a single integer is provided, it's considered as the upper bound.
+        - If a tuple of two integers is provided, they are treated as the lower and upper bounds.
+    ### quality_threshold (Union[float, int]):
+        Quality threshold value.
+        - Default is 0 (no filtering).
+        - Sequences with an average quality below the threshold are discarded.
+
+    Returns:
+    --------
+    Dict[str, Tuple[str, str]]:
+        A filtered dictionary where each value is a tuple containing two strings,
+        representing DNA sequences and their quality.
+
+    Examples:
+    ---------
+    ### Filtering sequences with a GC-content upper bound of 40%
+    filtered_seqs = filter_fastq(seqs, gc_bounds = 40)
+
+    ### Filtering sequences with a length between 50 and 100
+    filtered_seqs = filter_fastq(seqs, length_bounds = (50, 100))
+
+    ### Filtering sequences with a quality threshold of 20
+    filtered_seqs = filter_fastq(seqs, quality_threshold = 20)
+    """
+                   
+    filtered_seqs = filter_gc_content(seqs, gc_bounds)
+    filtered_seqs = filter_length(filtered_seqs, length_bounds)
+    filtered_seqs = filter_quality(filtered_seqs, quality_threshold)
+                   
     return filtered_seqs
