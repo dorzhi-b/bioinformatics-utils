@@ -49,3 +49,44 @@ def filter_gc_content(seqs: Dict[str, Tuple[str, str]],
             filtered_seqs[key] = value
 
     return filtered_seqs
+
+def filter_length(seqs: Dict[str, Tuple[str, str]],
+                  length_bounds: Union[int, Tuple[int, int]] = (0, 2**32)) -> Dict[str, int]:
+    """
+    Filters sequences based on sequence length.
+
+    Parameters:
+    -----------
+    seqs (Dict[str, Tuple[str, str]]):
+        A dictionary where each value is a tuple containing two strings,
+        representing DNA sequences and their quality.
+    length_bounds (Union[int, Tuple[int, int]]):
+        Length filtering bounds.
+        - Default is (0, 2^32) (no filtering).
+        - If a single integer is provided, it's considered as the upper bound.
+        - If a tuple of two integers is provided, they are treated as the lower and upper bounds.
+
+    Returns:
+    --------
+    Dict[str, int]:
+        A filtered dictionary where each value is a tuple containing two strings,
+        representing DNA sequences and their quality.
+
+    """
+    filtered_seqs = {}
+
+    if isinstance(length_bounds, int):
+        lower_bound = 0
+        upper_bound = length_bounds
+    elif isinstance(length_bounds, tuple) and len(length_bounds) == 2:
+        lower_bound, upper_bound = length_bounds
+    else:
+        raise ValueError("length_bounds should be a single integer or a tuple of two integers.")
+
+    for key, value in seqs.items():
+        seq_length = len(value[0])
+
+        if lower_bound <= seq_length <= upper_bound:
+            filtered_seqs[key] = value
+
+    return filtered_seqs
