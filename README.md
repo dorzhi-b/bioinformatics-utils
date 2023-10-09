@@ -23,7 +23,8 @@ Clone this repository to your local machine or download it manualy:
 
 run_dna_rna_tools.py
 This script allows you to perform various operations on DNA/RNA sequences, including transcription, reversal, complementation, and reverse complementation.
-Requires one or a list of nucleic acid sequences, and as the last element the command
+Requires one or a list of nucleic acid sequences, and as the last element the command.
+
 Example usage:
 
 ```python
