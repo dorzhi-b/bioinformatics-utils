@@ -181,13 +181,18 @@ def filter_fastq(seqs: Dict[str, Tuple[str, str]],
     Examples:
     ---------
     ### Filtering sequences with a GC-content upper bound of 40%
-    filtered_seqs = filter_fastq(seqs, gc_bounds = 40)
+    filter_fastq(seqs, gc_bounds = 40)
 
     ### Filtering sequences with a length between 50 and 100
-    filtered_seqs = filter_fastq(seqs, length_bounds = (50, 100))
+    filter_fastq(seqs, length_bounds = (50, 100))
 
     ### Filtering sequences with a quality threshold of 20
-    filtered_seqs = filter_fastq(seqs, quality_threshold = 20)
+    filter_fastq(seqs, quality_threshold = 20)
+    
+    ### Filtering sequences with GC-content upper bound of 40%, length between 50 and 100 and
+    quality threshold of 20
+    
+    filter_fastq(seqs, gc_bounds = 40, length_bounds = (50, 100), quality_threshold = 20)
     """
                    
     filtered_seqs = filter_gc_content(seqs, gc_bounds)
