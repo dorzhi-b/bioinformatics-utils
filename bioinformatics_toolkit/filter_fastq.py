@@ -1,6 +1,5 @@
 import os
 import argparse
-
 from typing import Dict, Tuple, Union
 
 
@@ -28,7 +27,7 @@ def filter_gc_content(seqs: Dict[str, Tuple[str, str]],
         A filtered dictionary where each value is a tuple containing two strings,
         representing DNA sequences and their quality.
     """
-                        
+
     filtered_seqs = {}
 
     if isinstance(gc_bounds, (float, int)):
@@ -79,7 +78,7 @@ def filter_length(seqs: Dict[str, Tuple[str, str]],
         representing DNA sequences and their quality.
 
     """
-                    
+
     filtered_seqs = {}
 
     if isinstance(length_bounds, int):
@@ -132,23 +131,6 @@ def filter_quality(seqs: Dict[str, Tuple[str, str]],
 
         for base in value[1]:
             quality_count += ord(base) - 33  
-
-        average_quality = quality_count / seq_length
-
-        if average_quality >= quality_threshold:
-            filtered_seqs[key] = value
-
-    return filtered_seqs
-    if not isinstance(quality_threshold, (int, float)):
-        raise ValueError("quality_threshold should be float or int")
-
-    for key, value in seqs.items():
-        quality_count = 0
-        seq_length = len(value[0])
-
-        for base in value[1]:
-            if base in QUALITY_CODE:
-                quality_count += QUALITY_CODE[base]
 
         average_quality = quality_count / seq_length
 
