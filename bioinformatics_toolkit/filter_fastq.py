@@ -157,6 +157,32 @@ def filter_quality(seqs: Dict[str, Tuple[str, str]],
 
     return filtered_seqs
 
+def read_fastq(input_path: str) -> Dict[str, Tuple[str, str]]:
+    """
+    Reads a FASTQ file and converts it into a dictionary.
+
+    Parameters:
+    -----------
+    input_path (str):
+        Path to the FASTQ file.
+
+    Returns:
+    --------
+    Dict[str, Tuple[str, str]]:
+        A dictionary where each value is a tuple containing two strings,
+        representing DNA sequences and their quality.
+    """
+
+    seqs = {}
+    with open(input_path, 'r') as f:
+        lines = f.readlines()
+        for i in range(0, len(lines), 4):
+            key = lines[i].strip()
+            seq = lines[i + 1].strip()
+            quality = lines[i + 3].strip()
+            seqs[key] = (seq, quality)
+    return seqs
+
 def filter_fastq(seqs: Dict[str, Tuple[str, str]],
                  gc_bounds: Union[float, Tuple[Union[float, int], Union[float, int]]] = (0, 100),
                  length_bounds: Union[int, Tuple[int, int]] = (0, 2**32),
