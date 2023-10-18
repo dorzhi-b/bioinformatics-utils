@@ -183,6 +183,28 @@ def read_fastq(input_path: str) -> Dict[str, Tuple[str, str]]:
             seqs[key] = (seq, quality)
     return seqs
 
+def write_fastq(filtered_seqs: Dict[str, Tuple[str, str]], output_filename: str = None) -> None:
+    """
+    Writes the filtered sequences into a FASTQ file.
+
+    Parameters:
+    -----------
+    filtered_seqs (Dict[str, Tuple[str, str]]):
+        A dictionary of filtered sequences where each value is a tuple containing
+        two strings representing DNA sequences and their quality.
+    output_filename (str):
+        Output filename to save the filtered sequences.
+    """
+
+    if not os.path.exists('fastq_filtrator_resuls'):
+        os.makedirs('fastq_filtrator_resuls')
+
+    output_filename = output_filename if output_filename else "output"
+
+    with open(os.path.join('fastq_filtrator_resuls', f"{output_filename}.fastq"), 'w') as f:
+        for key, value in filtered_seqs.items():
+            f.write(f"{key}\n{value[0]}\n+\n{value[1]}\n")
+
 def filter_fastq(seqs: Dict[str, Tuple[str, str]],
                  gc_bounds: Union[float, Tuple[Union[float, int], Union[float, int]]] = (0, 100),
                  length_bounds: Union[int, Tuple[int, int]] = (0, 2**32),
