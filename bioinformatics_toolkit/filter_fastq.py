@@ -1,12 +1,9 @@
+import os
+import argparse
+
 from typing import Dict, Tuple, Union
 
-QUALITY_CODE = {'!': 0, '"': 1, '#': 2, '$': 3, '%': 4, '&': 5,
-                "'": 6, '(': 7, ')': 8, '*': 9, '+': 10, ',': 11,
-                '-': 12, '.': 13, '/': 14, '0': 15, '1': 16, '2': 17,
-                '3': 18, '4': 19, '5': 20, '6': 21, '7': 22, '8': 23,
-                '9': 24, ':': 25, ';': 26, '<': 27, '=': 28, '>': 29,
-                '?': 30, '@': 31, 'A': 32, 'B': 33, 'C': 34, 'D': 35,
-                'E': 36, 'F': 37, 'G': 38, 'H': 39, 'I': 40}
+
 
 def filter_gc_content(seqs: Dict[str, Tuple[str, str]],
                       gc_bounds: Union[float, Tuple[Union[float, int], Union[float, int]]] = (0, 100)) -> Dict[str, float]:
@@ -123,9 +120,25 @@ def filter_quality(seqs: Dict[str, Tuple[str, str]],
         representing DNA sequences and their quality.
 
     """
-                     
+
     filtered_seqs = {}
 
+    if not isinstance(quality_threshold, (int, float)):
+        raise ValueError("quality_threshold should be float or int")
+
+    for key, value in seqs.items():
+        quality_count = 0
+        seq_length = len(value[0])
+
+        for base in value[1]:
+            quality_count += ord(base) - 33  
+
+        average_quality = quality_count / seq_length
+
+        if average_quality >= quality_threshold:
+            filtered_seqs[key] = value
+
+    return filtered_seqs
     if not isinstance(quality_threshold, (int, float)):
         raise ValueError("quality_threshold should be float or int")
 
