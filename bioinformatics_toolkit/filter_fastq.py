@@ -205,7 +205,7 @@ def write_fastq(filtered_seqs: Dict[str, Tuple[str, str]], output_filename: str 
         for key, value in filtered_seqs.items():
             f.write(f"{key}\n{value[0]}\n+\n{value[1]}\n")
 
-def filter_fastq(seqs: Dict[str, Tuple[str, str]],
+def filter_fastq(input_path: str,
                  gc_bounds: Union[float, Tuple[Union[float, int], Union[float, int]]] = (0, 100),
                  length_bounds: Union[int, Tuple[int, int]] = (0, 2**32),
                  quality_threshold: Union[float, int] = 0) -> Dict[str, Tuple[str, str]]:
@@ -214,21 +214,20 @@ def filter_fastq(seqs: Dict[str, Tuple[str, str]],
 
     Parameters:
     -----------
-    ### seqs (Dict[str, Tuple[str, str]]):
-        A dictionary where each value is a tuple containing two strings,
-        representing DNA sequences and their quality.
-    ### gc_bounds (Union[float, Tuple[Union[float, int], Union[float, int]]]):
+    input_path (str):
+        Path to the input FASTQ file.
+    gc_bounds (Union[float, Tuple[Union[float, int], Union[float, int]]]):
         GC-content filtering bounds.
         - Default is 100 (no filtering).
         - If a single float is provided, it's considered as the upper bound.
         - If an integer is provided, it's considered as the upper bound.
         - If a tuple of two numbers is provided, they are treated as the lower and upper bounds.
-    ### length_bounds (Union[int, Tuple[int, int]]):
+    length_bounds (Union[int, Tuple[int, int]]):
         Length filtering bounds.
         - Default is (0, 2^32) (no filtering).
         - If a single integer is provided, it's considered as the upper bound.
         - If a tuple of two integers is provided, they are treated as the lower and upper bounds.
-    ### quality_threshold (Union[float, int]):
+    quality_threshold (Union[float, int]):
         Quality threshold value.
         - Default is 0 (no filtering).
         - Sequences with an average quality below the threshold are discarded.
@@ -238,26 +237,27 @@ def filter_fastq(seqs: Dict[str, Tuple[str, str]],
     Dict[str, Tuple[str, str]]:
         A filtered dictionary where each value is a tuple containing two strings,
         representing DNA sequences and their quality.
-
-    Examples:
-    ---------
-    ### Filtering sequences with a GC-content upper bound of 40%
-    filter_fastq(seqs, gc_bounds = 40)
-
-    ### Filtering sequences with a length between 50 and 100
-    filter_fastq(seqs, length_bounds = (50, 100))
-
-    ### Filtering sequences with a quality threshold of 20
-    filter_fastq(seqs, quality_threshold = 20)
-    
-    ### Filtering sequences with GC-content upper bound of 40%, length between 50 and 100 and
-    quality threshold of 20
-    
-    filter_fastq(seqs, gc_bounds = 40, length_bounds = (50, 100), quality_threshold = 20)
     """
-                   
-    filtered_seqs = filter_gc_content(seqs, gc_bounds)
+
+    filtered_seqs = read_fastq(input_path)
+    filtered_seqs = filter_gc_content(filtered_seqs, gc_bounds)
     filtered_seqs = filter_length(filtered_seqs, length_bounds)
     filtered_seqs = filter_quality(filtered_seqs, quality_threshold)
-                   
+    write_fastq(filtered_seqs, "output")
+
     return filtered_seqs
+
+if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(description='Filter FASTQ sequences based on GC-content, length, and quality threshold.')
+    parser.add_argument('input_path', type=str, help='Path to the input FASTQ file.')
+    parser.add_argument('--gc_bounds', type=float, nargs='+', default=[0, 100], help='GC-content filtering bounds.')
+    parser.add_argument('--length_bounds', type=int, nargs='+', default=[0, 2**32], help='Length filtering bounds.')
+    parser.add_argument('--quality_threshold', type=float, default=0, help='Quality threshold value.')
+
+    args = parser.parse_args()
+
+    gc_bounds = args.gc_bounds if len(args.gc_bounds) == 1 else tuple(args.gc_bounds)
+    length_bounds = args.length_bounds if len(args.length_bounds) == 1 else tuple(args.length_bounds)
+
+    filter_fastq(args.input_path, gc_bounds, length_bounds, args.quality_threshold)
