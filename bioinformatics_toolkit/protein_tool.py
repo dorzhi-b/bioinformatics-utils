@@ -1,5 +1,7 @@
-from typing import Dict, List, Union
 import sys
+from typing import Dict, List, Union
+
+
 
 # Define dictionaries for amino acid codes
 ABBREVIATION_THREE_TO_ONE = {

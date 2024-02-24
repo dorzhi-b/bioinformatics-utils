@@ -1,7 +1,11 @@
 from typing import Union, List, Dict, Tuple
-from bioinformatics_toolkit import dna_rna_tools
-from bioinformatics_toolkit import filter_fastq
-from bioinformatics_toolkit import protein_tool
+
+
+from bioinformatics_toolkit.dna_rna_tools import transcribe, reverse, reverse_complement, complement
+from bioinformatics_toolkit.filter_fastq import filter_gc_content, filter_length, filter_quality, read_fastq, write_fastq
+from bioinformatics_toolkit.protein_tool import to_rna, to_dna, define_charge, define_polarity, change_abbreviation, is_correct_seq
+
+
 
 ALPHABET = {'a', 't', 'u', 'g', 'c', 'A', 'T', 'U', 'G', 'C'}
 
@@ -94,10 +98,12 @@ def filter_fastq(seqs: Dict[str, Tuple[str, str]],
     filtered_seqs = filter_fastq(seqs, quality_threshold = 20)
     """
                    
-    filtered_seqs = filter_gc_content(seqs, gc_bounds)
+    filtered_seqs = read_fastq(input_path)
+    filtered_seqs = filter_gc_content(filtered_seqs, gc_bounds)
     filtered_seqs = filter_length(filtered_seqs, length_bounds)
     filtered_seqs = filter_quality(filtered_seqs, quality_threshold)
-                   
+    write_fastq(filtered_seqs, "output")
+
     return filtered_seqs
 
 def protein_tool(*args: str) -> Union[str, List[Union[Dict[str, int], str]]]:
